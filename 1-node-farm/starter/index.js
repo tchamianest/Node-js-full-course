@@ -63,7 +63,9 @@ const url = require("url");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////// create simple server
-
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8"); //call use isync in order to run one time and store it
+// to change our information
+const dataobj = JSON.parse(data);
 const server = http.createServer((req, res) => {
   //   console.log(req);
   //   res.end("Hello from sereve HAHA!!");
@@ -74,6 +76,28 @@ const server = http.createServer((req, res) => {
     res.end("you are on product name @");
   } else if (path === "/dashboard") {
     res.end("you are on Dashboard page");
+
+    //// building simple api
+  } else if (path === "/api") {
+    res.writeHead(200, { "Content-type": "application/json" });
+
+    //this is the same as to respond the data before chang it
+    // res.end(JSON.stringify(informatino));
+
+    /// out put use the outiside infromation
+    res.end(data);
+
+    //// we need to call this file outside in order to prevent recalling evry time
+
+    // fs.readFile(`${__dirname}/dev-data/data.json`, "utf-8", (err, data) => {
+    //   const informatino = JSON.parse(data);
+    //   res.writeHead(200, { "Content-type": "application/json" });
+
+    //   //this is the same as to respond the data before chang it
+    //   res.end(JSON.stringify(informatino));
+    // });
+
+    /// end of simple api
   } else {
     res.writeHead(404, {
       "Content-type": "text/html",
