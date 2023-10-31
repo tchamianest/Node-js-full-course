@@ -3,6 +3,7 @@
 ////1 reading file sytem module
 const fs = require("fs");
 const http = require("http");
+const url = require("url");
 
 // console.log(fs);
 
@@ -64,8 +65,22 @@ const http = require("http");
 ////////////// create simple server
 
 const server = http.createServer((req, res) => {
-  console.log(req);
-  res.end("Hello from sereve HAHA!!");
+  //   console.log(req);
+  //   res.end("Hello from sereve HAHA!!");
+  const path = req.url;
+  if (path === "/" || path === "/home") {
+    res.end("you are on Home page !");
+  } else if (path === "/product") {
+    res.end("you are on product name @");
+  } else if (path === "/dashboard") {
+    res.end("you are on Dashboard page");
+  } else {
+    res.writeHead(404, {
+      "Content-type": "text/html",
+      "my-own-header": "hello word",
+    });
+    res.end("<h1>this page not fund !</h1>\n<h4>Tchami page</h4");
+  }
 });
 
 server.listen(3000, "127.0.0.1", () => {
