@@ -4,6 +4,7 @@
 const fs = require("fs");
 const http = require("http");
 const url = require("url");
+const slugify = require("slugify");
 const replaceTemplate = require("./modules/replacetemplate");
 
 // console.log(fs);
@@ -84,6 +85,10 @@ tempproduct.replace(); //call use isync in order to run one time and store it
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8"); //call use isync in order to run one time and store it
 // to change our information
 const dataobj = JSON.parse(data);
+/// learn the slugify
+const sluf = dataobj.map((el) => slugify(el.productName, { lower: true }));
+console.log(sluf);
+console.log(slugify("fresh avocado", { replace: "-", lower: true }));
 const server = http.createServer((req, res) => {
   // console.log(req.url);
   // console.log(url.parse(req.url, true)); // this can show us different thing based on this user request
