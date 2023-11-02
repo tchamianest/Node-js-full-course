@@ -73,6 +73,7 @@ const replaceTemplate = (temp, product) => {
   output = output.replace(/{%QUANTITY%}/g, product.quantity);
   output = output.replace(/{%PRICE%}/g, product.price);
   output = output.replace(/{%DESCRIPTION%}/g, product.description);
+  output = output.replace(/{%ID%}/g, product.id);
 
   if (!product.organic) {
     output = output.replace(/{%NOT-ORGANIC%}/g, "not-organic");
@@ -101,8 +102,8 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8"); //call
 const dataobj = JSON.parse(data);
 const server = http.createServer((req, res) => {
   // console.log(req.url);
-  console.log(url.parse(req.url, true)); // this can show us different thing based on this user request
-  const { query, pathname } = url.parse(req.url);
+  // console.log(url.parse(req.url, true)); // this can show us different thing based on this user request
+  const { query, pathname } = url.parse(req.url, true);
   //   console.log(req);
   //   res.end("Hello from sereve HAHA!!");
   const path = req.url;
@@ -117,8 +118,11 @@ const server = http.createServer((req, res) => {
     res.end(output);
     // product
   } else if (pathname === "/product") {
-    console.log(query);
-    res.end("you are on product name @");
+    res.writeHead(200, { "Content-type": "text/html" });
+    const product = dataobj[query.id];
+    const output = replaceTemplate(tempproduct, product);
+
+    res.end(output);
   } else if (pathname === "/dashboard") {
     res.end("you are on Dashboard page");
 
