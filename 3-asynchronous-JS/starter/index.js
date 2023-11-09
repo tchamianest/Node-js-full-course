@@ -108,8 +108,30 @@ const getdogphot = async () => {
   } catch (err) {
     console.log(err);
   }
+  return 'yeah Ready💀';
 };
 
 // call getdogphot function
 getdogphot();
+
+// call it async to get this return value
+(async () => {
+  try {
+    console.log(`we alredy write the file 2`);
+    const x = await getdogphot();
+    console.log(x);
+    console.log(`we alredy write the file 2`);
+  } catch (err) {}
+})();
+
+// when we have return insider the asyncy
+/*
+    getdogphot()
+    .then((res) => {
+        console.log(res);
+    })
+    .catch((err) => {
+        console.log('bUt insider the promise there is error');
+    });
+*/
 //⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️use the async function ⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️
