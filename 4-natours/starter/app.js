@@ -7,6 +7,7 @@ const UserRouter = require('./routes/userRouter');
 const app = express();
 
 app.use(express.json());
+app.use(express.static(`${__dirname}/public`));
 
 //// how create the meddleware
 
