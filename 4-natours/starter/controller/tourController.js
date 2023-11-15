@@ -3,6 +3,27 @@ const fs = require('fs');
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 );
+
+exports.checkId = (req, res, next, val) => {
+  if (req.params.id * 1 > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'enter the proper ID',
+    });
+  }
+  next();
+};
+//midware for check the body
+exports.checkbody = (req, res, next) => {
+  if (!req.body.name || !req.body.price) {
+    return res.status(400).json({
+      status: 'Fail',
+      message: 'missing name or price',
+    });
+  }
+  next();
+};
+
 exports.getallturs = (req, res) => {
   console.log(req.requestTime);
   res.status(200).json({
@@ -27,12 +48,12 @@ exports.getonetour = (req, res) => {
   /// check if the request exist
 
   // if (idr > tours.length) {
-  if (!tour) {
-    return res.status(404).json({
-      status: 'Fail',
-      message: `'Invalid Id':${idr}`,
-    });
-  }
+  //   if (!tour) {
+  //     return res.status(404).json({
+  //       status: 'Fail',
+  //       message: `'Invalid Id':${idr}`,
+  //     });
+  //   }
   res.status(201).json({
     status: 'success',
     data: {
@@ -62,12 +83,7 @@ exports.postnewtour = (req, res) => {
 exports.updatetours = (req, res) => {
   console.log(tours.length);
   console.log(req.params.id);
-  if (req.params.id * 1 > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'enter the proper ID',
-    });
-  }
+
   res.status(200).json({
     status: 'success',
     data: {
@@ -77,12 +93,12 @@ exports.updatetours = (req, res) => {
 };
 
 exports.deletetour = (req, res) => {
-  if (req.params.id * 1 > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'enter the proper ID',
-    });
-  }
+  //   if (req.params.id * 1 > tours.length) {
+  //     return res.status(404).json({
+  //       status: 'fail',
+  //       message: 'enter the proper ID',
+  //     });
+  //   }
   res.status(204).json({
     status: 'success',
   });
