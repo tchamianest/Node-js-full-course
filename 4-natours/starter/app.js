@@ -1,9 +1,11 @@
 const express = require('express');
 const fs = require('fs');
 const morgan = require('morgan');
+const tourRouter = require('./routes/tourRouter');
+const UserRouter = require('./routes/userRouter');
 
 const app = express();
-const port = 3000;
+
 app.use(express.json());
 
 //// how create the meddleware
@@ -31,133 +33,7 @@ app.use((req, res, next) => {
 // });
 // first load the the data from the tours
 
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
-);
-
-///refactorie our code
-
-const getallturs = (req, res) => {
-  console.log(req.requestTime);
-  res.status(200).json({
-    status: 'success',
-    requestedAt: req.requestTime,
-    result: tours.length,
-    tours,
-  });
-};
-
-const getonetour = (req, res) => {
-  // this can show us the request id that we receive from the serve
-  // console.log(req.params);
-
-  //convert the the recevied request from string to the number
-  const idr = req.params.id * 1;
-
-  // search for the tours which have the sam eid us what we want
-
-  const tour = tours.find((el) => el.id === idr);
-
-  /// check if the request exist
-
-  // if (idr > tours.length) {
-  if (!tour) {
-    return res.status(404).json({
-      status: 'Fail',
-      message: `'Invalid Id':${idr}`,
-    });
-  }
-  res.status(201).json({
-    status: 'success',
-    data: {
-      tour,
-    },
-  });
-};
-
-const postnewtour = (req, res) => {
-  const newid = tours[tours.length - 1].id + 1;
-  const newpost = Object.assign({ id: newid }, req.body);
-  tours.push(newpost);
-
-  //write what we done into our tour abject
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    (err) => {
-      res.status(201).send({
-        status: 'success',
-        data: newpost,
-      });
-    }
-  );
-};
-
-const updatetours = (req, res) => {
-  console.log(tours.length);
-  console.log(req.params.id);
-  if (req.params.id * 1 > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'enter the proper ID',
-    });
-  }
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tours: '<Data Updated>',
-    },
-  });
-};
-
-const deletetour = (req, res) => {
-  if (req.params.id * 1 > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'enter the proper ID',
-    });
-  }
-  res.status(204).json({
-    status: 'success',
-  });
-};
-
 /// CREATE USER FUNCTION
-
-const getalluser = (req, res) => {
-  res.status(500).json({
-    status: 'Error ',
-    message: 'this function are not created yet😉',
-  });
-};
-
-const createuser = (req, res) => {
-  res.status(500).json({
-    status: 'Error ',
-    message: 'this function are not created yet😉',
-  });
-};
-
-const deleteuser = (req, res) => {
-  res.status(500).json({
-    status: 'Error ',
-    message: 'this function are not created yet😉',
-  });
-};
-
-const updateuser = (req, res) => {
-  res.status(500).json({
-    status: 'Error ',
-    message: 'this function are not created yet😉',
-  });
-};
-
-const getUser = (req, res) => {
-  res.status(500).json({
-    status: 'Error ',
-    message: 'this function are not created yet😉',
-  });
-};
 
 // console.log(tours);
 // app.get('/api/v1/tours', getallturs);
@@ -176,23 +52,34 @@ const getUser = (req, res) => {
 // app.delete('/api/v1/tours/:id', deletetour);
 
 ///we can us order router to not repeat ourself
-app.route('/api/v1/tours').get(getallturs).post(postnewtour).delete(deletetour);
 
-//with id
-app
-  .route('/api/v1/tours/:id')
-  .get(getonetour)
-  .patch(updatetours)
-  .delete(deletetour);
+///MOUNTING ROUTER
+// const UserRouter = express.Router();
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', UserRouter);
+
+// UserRouter.route('/').get(getalluser).post(createuser);
+// UserRouter.route('/:id').get(getUser).patch(updateuser).delete(deleteuser);
+
+/// user router
+
+//ROUTER
+// app.route('/api/v1/tours').get(getallturs).post(postnewtour).delete(deletetour);
+
+// //with id
+// app
+//   .route('/api/v1/tours/:id')
+//   .get(getonetour)
+//   .patch(updatetours)
+//   .delete(deletetour);
 
 /// accessing router based on router of user
-app.route('/api/v1/users').get(getalluser).post(createuser);
-app
-  .route('/api/v1/users/:id')
-  .get(getUser)
-  .patch(updateuser)
-  .delete(deleteuser);
+// app.route('/api/v1/users').get(getalluser).post(createuser);
+// app
+//   .route('/api/v1/users/:id')
+//   .get(getUser)
+//   .patch(updateuser)
+//   .delete(deleteuser);
 //listening to the serve
-app.listen(port, () => {
-  console.log(`this is the message from server port${port}...`);
-});
+
+module.exports = app;
