@@ -1,9 +1,26 @@
 const express = require('express');
 const fs = require('fs');
+const morgan = require('morgan');
 
 const app = express();
 const port = 3000;
 app.use(express.json());
+
+//// how create the meddleware
+
+//CALL MORGAN MODULE
+app.use(morgan('dev'));
+
+app.use((req, res, next) => {
+  console.log('Hello from the meadle ware🫲');
+  next();
+});
+
+//another middle ware for the time use when we need to test
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
 // app.get('/', (req, res) => {
 //   // here we can create a simple jason
 //   res.status(200).json({
@@ -21,8 +38,10 @@ const tours = JSON.parse(
 ///refactorie our code
 
 const getallturs = (req, res) => {
+  console.log(req.requestTime);
   res.status(200).json({
     status: 'success',
+    requestedAt: req.requestTime,
     result: tours.length,
     tours,
   });
@@ -102,22 +121,77 @@ const deletetour = (req, res) => {
     status: 'success',
   });
 };
+
+/// CREATE USER FUNCTION
+
+const getalluser = (req, res) => {
+  res.status(500).json({
+    status: 'Error ',
+    message: 'this function are not created yet😉',
+  });
+};
+
+const createuser = (req, res) => {
+  res.status(500).json({
+    status: 'Error ',
+    message: 'this function are not created yet😉',
+  });
+};
+
+const deleteuser = (req, res) => {
+  res.status(500).json({
+    status: 'Error ',
+    message: 'this function are not created yet😉',
+  });
+};
+
+const updateuser = (req, res) => {
+  res.status(500).json({
+    status: 'Error ',
+    message: 'this function are not created yet😉',
+  });
+};
+
+const getUser = (req, res) => {
+  res.status(500).json({
+    status: 'Error ',
+    message: 'this function are not created yet😉',
+  });
+};
+
 // console.log(tours);
-app.get('/api/v1/tours', getallturs);
+// app.get('/api/v1/tours', getallturs);
 
 /// how we can handle the request with the id
 
-app.get('/api/v1/tours/:id', getonetour);
+// app.get('/api/v1/tours/:id', getonetour);
 
 /// how to post something
-app.post('/api/v1/tours', postnewtour);
+// app.post('/api/v1/tours', postnewtour);
 
 // how we can update the api info
-app.patch('/api/v1/tours/:id', updatetours);
+// app.patch('/api/v1/tours/:id', updatetours);
 
 /// how to use delete methode for delete the things from database
-app.delete('/api/v1/tours/:id', deletetour);
+// app.delete('/api/v1/tours/:id', deletetour);
 
+///we can us order router to not repeat ourself
+app.route('/api/v1/tours').get(getallturs).post(postnewtour).delete(deletetour);
+
+//with id
+app
+  .route('/api/v1/tours/:id')
+  .get(getonetour)
+  .patch(updatetours)
+  .delete(deletetour);
+
+/// accessing router based on router of user
+app.route('/api/v1/users').get(getalluser).post(createuser);
+app
+  .route('/api/v1/users/:id')
+  .get(getUser)
+  .patch(updateuser)
+  .delete(deleteuser);
 //listening to the serve
 app.listen(port, () => {
   console.log(`this is the message from server port${port}...`);
