@@ -26,6 +26,36 @@ app.get('/api/v1/tours', (req, res) => {
   });
 });
 
+/// how we can handle the request with the id
+
+app.get('/api/v1/tours/:id', (req, res) => {
+  // this can show us the request id that we receive from the serve
+  // console.log(req.params);
+
+  //convert the the recevied request from string to the number
+  const idr = req.params.id * 1;
+
+  // search for the tours which have the sam eid us what we want
+
+  const tour = tours.find((el) => el.id === idr);
+
+  /// check if the request exist
+
+  // if (idr > tours.length) {
+  if (!tour) {
+    return res.status(404).json({
+      status: 'Fail',
+      message: `'Invalid Id':${idr}`,
+    });
+  }
+  res.status(201).json({
+    status: 'success',
+    data: {
+      tour,
+    },
+  });
+});
+
 /// how to post something
 app.post('/api/v1/tours', (req, res) => {
   const newid = tours[tours.length - 1].id + 1;
@@ -43,6 +73,24 @@ app.post('/api/v1/tours', (req, res) => {
       });
     }
   );
+});
+
+// how we can update the api info
+app.patch('/api/v1/tours/:id', (req, res) => {
+  console.log(tours.length);
+  console.log(req.params.id);
+  if (req.params.id * 1 > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'enter the proper ID',
+    });
+  }
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tours: '<Data Updated>',
+    },
+  });
 });
 
 app.listen(port, () => {
