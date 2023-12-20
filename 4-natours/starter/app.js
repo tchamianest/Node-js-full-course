@@ -3,6 +3,7 @@ const fs = require('fs');
 const morgan = require('morgan');
 const tourRouter = require('./routes/tourRouter');
 const UserRouter = require('./routes/userRouter');
+// console.log(UserRouter);
 
 const app = express();
 
@@ -12,7 +13,10 @@ app.use(express.static(`${__dirname}/public`));
 //// how create the meddleware
 
 //CALL MORGAN MODULE
-app.use(morgan('dev'));
+console.log(process.env.NODE_ENV);
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
 
 app.use((req, res, next) => {
   console.log('Hello from the meadle ware🫲');
