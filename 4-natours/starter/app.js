@@ -1,12 +1,11 @@
 const express = require('express');
-const fs = require('fs');
 const morgan = require('morgan');
 const tourRouter = require('./routes/tourRouter');
 const UserRouter = require('./routes/userRouter');
-// console.log(UserRouter);
 
 const app = express();
 
+//// mild way for accepting
 app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
 
