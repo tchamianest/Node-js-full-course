@@ -6,6 +6,7 @@ const http = require("http");
 const url = require("url");
 const slugify = require("slugify");
 const replaceTemplate = require("./modules/replacetemplate");
+console.log(fs);
 
 // console.log(fs);
 
@@ -105,6 +106,7 @@ const server = http.createServer((req, res) => {
     const output = tempover.replace("{%PRODUCT-CARD%}", cardhtml);
 
     res.end(output);
+    console.log(req.url);
     // product
   } else if (pathname === "/product") {
     res.writeHead(200, { "Content-type": "text/html" });
