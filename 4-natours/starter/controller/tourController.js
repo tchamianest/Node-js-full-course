@@ -4,7 +4,37 @@ const Tour = require("../models/toursmodels");
 
 exports.getallturs = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    console.log(req.query);
+    //// USE THE QUERY FILTERING
+    //1)simple  Filtering
+    const queryObj = { ...req.query };
+    const dontPassFilterArray = ["page", "sort", "fields"];
+    dontPassFilterArray.forEach((el) => delete queryObj[el]);
+
+    // 2)Advanced Filtering
+    ///{difficulty:'easy',duration:{$gte:5}} this can filter which have duration greater than 5
+    //{ page: '2', sort: '10', duration: { gte: '5' } } from console
+    let querStr = JSON.stringify(queryObj);
+    //CHANGE ALL REQUEST FROM QUERY REQUEST TO MATCH DATABASE
+    querStr = querStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    const finalFilter = JSON.parse(querStr);
+    // console.log(req.query, queryObj);
+    //simple way for building the query na d filter
+    // const tours = await Tour.find({ duration: 5, difficulty: "easy" });
+
+    ///SECOOND WAY work as first but it difficult
+
+    const query = Tour.find(finalFilter);
+    ///EXECUTE QUERY IN PROFESSION WAY
+    const tours = await query;
+    // const tours = await Tour.find()
+    //   .where("duration")
+    //   .equals("5")
+    //   .where("difficulty")
+    //   .equals("easy");
+
+    ////SEND RESPONSE TO SERVER
+
     res.status(200).json({
       status: "success",
       requestedAt: req.requestTime,
