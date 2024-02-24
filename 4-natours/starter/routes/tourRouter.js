@@ -1,23 +1,20 @@
-const express = require('express');
+/* eslint-disable prettier/prettier */
+const express = require("express");
+
 const router = express.Router();
 
-const tourController = require('./../controller/tourController');
+const tourController = require("../controller/tourController");
 
-// add param middle ware for the specific id
-
-//middle ware for checking the id before continue
-router.param('id', tourController.checkId);
-///refactorie our code
+// router.param("id", tourController.checkId);
 
 router
-  .route('/')
+  .route("/")
   .get(tourController.getallturs)
-  .post(tourController.checkbody, tourController.postnewtour)
+  .post(tourController.postnewtour)
   .delete(tourController.deletetour);
 
-//with id
 router
-  .route('/:id')
+  .route("/:id")
   .get(tourController.getonetour)
   .patch(tourController.updatetours)
   .delete(tourController.deletetour);

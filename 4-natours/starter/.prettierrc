@@ -1,4 +1,11 @@
 {
-  "singleQuote": true,
-  "parser": "flow"
+  "prettier/prettier": [
+    "error",
+    {},
+    {
+      "fileInfoOptions": {
+        "withNodeModules": true
+      }
+    }
+  ]
 }
