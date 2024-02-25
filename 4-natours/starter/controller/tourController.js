@@ -24,7 +24,7 @@ exports.getallturs = async (req, res) => {
 
     ///SECOOND WAY work as first but it difficult
 
-    let query = Tour.find(finalFilter);
+    let query = Tour.find();
     ///EXECUTE QUERY IN PROFESSION WAY
     console.log(req.query);
 
@@ -38,6 +38,30 @@ exports.getallturs = async (req, res) => {
       query = query.sort(sortBy);
     } else {
       query = query.sort("-startDate");
+    }
+
+    ///4)FIELD LIMITING
+    // 127.0.0.1:3000/api/v1/tours?fields=name,duration,price
+    if (req.query.fields) {
+      const fieldsdisplay = req.query.fields.split(",").join(" ");
+      query = query.select(fieldsdisplay);
+    } else {
+      query = query.select("-__v");
+    }
+
+    // 5)PAGINATION
+    const page = req.query.page * 1 || 1;
+    const limits = req.query.limit * 1 || 100;
+    const skip = (page - 1) * limits;
+    console.log(skip, page, limits);
+    //meaning skip 10 is to jump 10 on page 1:0-10
+    query = query.skip(skip).limit(limits);
+    console.log(limits);
+
+    if (req.query.page) {
+      const numTours = await Tour.countDocuments();
+
+      if (skip >= numTours) throw new Error("this page does not exists");
     }
     const tours = await query;
     // const tours = await Tour.find()
