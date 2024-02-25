@@ -6,12 +6,12 @@ exports.getallturs = async (req, res) => {
   try {
     console.log(req.query);
     //// USE THE QUERY FILTERING
-    //1)simple  Filtering
+    //1A)simple  Filtering
     const queryObj = { ...req.query };
     const dontPassFilterArray = ["page", "sort", "fields"];
     dontPassFilterArray.forEach((el) => delete queryObj[el]);
 
-    // 2)Advanced Filtering
+    // 1B)Advanced Filtering
     ///{difficulty:'easy',duration:{$gte:5}} this can filter which have duration greater than 5
     //{ page: '2', sort: '10', duration: { gte: '5' } } from console
     let querStr = JSON.stringify(queryObj);
@@ -24,8 +24,21 @@ exports.getallturs = async (req, res) => {
 
     ///SECOOND WAY work as first but it difficult
 
-    const query = Tour.find(finalFilter);
+    let query = Tour.find(finalFilter);
     ///EXECUTE QUERY IN PROFESSION WAY
+    console.log(req.query);
+
+    //2) SORTING
+    if (req.query.sort) {
+      //second option
+      const sortBy = req.query.sort.split(",").join(" ");
+      // query = query.sort(req.query.sort);
+
+      // ADVANCED SORTING
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort("-startDate");
+    }
     const tours = await query;
     // const tours = await Tour.find()
     //   .where("duration")
