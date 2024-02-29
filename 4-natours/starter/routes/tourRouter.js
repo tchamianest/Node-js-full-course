@@ -13,6 +13,7 @@ router
   .post(tourController.postnewtour)
   .delete(tourController.deletetour);
 
+router.route("/tour-stats").get(tourController.getTourStats);
 router
   .route("/:id")
   .get(tourController.getonetour)
