@@ -1,75 +1,17 @@
 const Tour = require("../models/toursmodels");
-
+const APIFeature = require("../utitls/apiFeatures");
 // midware for check the body
+////REFACTORY WITH CLASS CONTAIN ALL MY QUERIE
 
 exports.getallturs = async (req, res) => {
   try {
-    console.log(req.query);
-    //// USE THE QUERY FILTERING
-    //1A)simple  Filtering
-    const queryObj = { ...req.query };
-    const dontPassFilterArray = ["page", "sort", "fields"];
-    dontPassFilterArray.forEach((el) => delete queryObj[el]);
-
-    // 1B)Advanced Filtering
-    ///{difficulty:'easy',duration:{$gte:5}} this can filter which have duration greater than 5
-    //{ page: '2', sort: '10', duration: { gte: '5' } } from console
-    let querStr = JSON.stringify(queryObj);
-    //CHANGE ALL REQUEST FROM QUERY REQUEST TO MATCH DATABASE
-    querStr = querStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-    const finalFilter = JSON.parse(querStr);
-    // console.log(req.query, queryObj);
-    //simple way for building the query na d filter
-    // const tours = await Tour.find({ duration: 5, difficulty: "easy" });
-
-    ///SECOOND WAY work as first but it difficult
-
-    let query = Tour.find();
-    ///EXECUTE QUERY IN PROFESSION WAY
-    console.log(req.query);
-
-    //2) SORTING
-    if (req.query.sort) {
-      //second option
-      const sortBy = req.query.sort.split(",").join(" ");
-      // query = query.sort(req.query.sort);
-
-      // ADVANCED SORTING
-      query = query.sort(sortBy);
-    } else {
-      query = query.sort("-startDate");
-    }
-
-    ///4)FIELD LIMITING
-    // 127.0.0.1:3000/api/v1/tours?fields=name,duration,price
-    if (req.query.fields) {
-      const fieldsdisplay = req.query.fields.split(",").join(" ");
-      query = query.select(fieldsdisplay);
-    } else {
-      query = query.select("-__v");
-    }
-
-    // 5)PAGINATION
-    const page = req.query.page * 1 || 1;
-    const limits = req.query.limit * 1 || 100;
-    const skip = (page - 1) * limits;
-    console.log(skip, page, limits);
-    //meaning skip 10 is to jump 10 on page 1:0-10
-    query = query.skip(skip).limit(limits);
-    console.log(limits);
-
-    if (req.query.page) {
-      const numTours = await Tour.countDocuments();
-
-      if (skip >= numTours) throw new Error("this page does not exists");
-    }
-    const tours = await query;
-    // const tours = await Tour.find()
-    //   .where("duration")
-    //   .equals("5")
-    //   .where("difficulty")
-    //   .equals("easy");
-
+    const query = Tour.find();
+    const flterPage = new APIFeature(query, req.query)
+      .filter()
+      .sort()
+      .limitField()
+      .pagination();
+    const tours = await flterPage.query;
     ////SEND RESPONSE TO SERVER
 
     res.status(200).json({
@@ -150,6 +92,34 @@ exports.deletetour = async (req, res) => {
     res.status(200).json({
       status: "success delete",
       message: tourdeleted,
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: "fail to update",
+      error: err.message,
+    });
+  }
+};
+
+exports.getTourStats = async (req, res) => {
+  try {
+    const stats = await Tour.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 4.2 } },
+      },
+      {
+        $group: {
+          _id: null,
+          avgRating: { $avg: "$ratingsAverage" },
+          avgPrice: { $avg: "$price" },
+          minPrice: { $min: "$price" },
+          maxPrice: { $max: "$price" },
+        },
+      },
+    ]);
+    res.status(200).json({
+      status: "success statistics",
+      stats,
     });
   } catch (err) {
     res.status(404).json({
